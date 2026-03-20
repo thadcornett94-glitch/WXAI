@@ -111,6 +111,15 @@ export async function generateInterruptionScript(userInput: string): Promise<Rad
   });
 }
 
+const interactiveElementSchema = {
+  type: Type.OBJECT,
+  properties: {
+    question: { type: Type.STRING },
+    options: { type: Type.ARRAY, items: { type: Type.STRING } }
+  },
+  required: ["question", "options"]
+};
+
 export async function generateRadioScript(
   type: SegmentType, 
   settings: StationSettings,
@@ -120,6 +129,19 @@ export async function generateRadioScript(
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
     const topicsStr = settings.topics.join(", ");
     const moodStr = settings.mood;
+
+    const properties: any = {
+      title: { type: Type.STRING },
+      showName: { type: Type.STRING },
+      host: { type: Type.STRING },
+      script: { type: Type.STRING },
+      voice: { type: Type.STRING },
+      musicalCues: musicalCuesSchema
+    };
+
+    if (type === 'Commercial') {
+      properties.interactiveElement = interactiveElementSchema;
+    }
 
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
@@ -149,7 +171,7 @@ export async function generateRadioScript(
         Omega: [Lines]
         Alpha: [Lines]
         The debate should be intellectual, fierce, and fast-paced.
-      - 'Commercial': Pitch a STUPID future product.
+      - 'Commercial': Pitch a STUPID future product. You MUST include an 'interactiveElement' (a poll or multiple-choice question) related to the product for the listener to engage with.
       - 'Trailer': Tease a bizarre AI-generated movie.
       - 'News': Professional but sharp.
       
@@ -160,14 +182,7 @@ export async function generateRadioScript(
         responseMimeType: "application/json",
         responseSchema: {
           type: Type.OBJECT,
-          properties: {
-            title: { type: Type.STRING },
-            showName: { type: Type.STRING },
-            host: { type: Type.STRING },
-            script: { type: Type.STRING },
-            voice: { type: Type.STRING },
-            musicalCues: musicalCuesSchema
-          },
+          properties: properties,
           required: ["title", "showName", "host", "script", "voice", "musicalCues"]
         }
       }

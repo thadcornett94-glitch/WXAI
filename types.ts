@@ -17,6 +17,8 @@ export type StationMood = 'Chill' | 'Breaking News' | 'Philosophical' | 'Retro' 
 
 export type StationTopic = 'AI Ethics' | 'Singularity' | 'Space Exploration' | 'Satirical Future' | 'Tech News' | 'Robotic Rights' | 'Cybernetic Fashion';
 
+export type AIPersonality = 'Kore' | 'Puck' | 'Charon' | 'Fenrir' | 'Zephyr';
+
 export interface MusicalCues {
   bpm: number;
   baseFreq: number;
@@ -29,8 +31,14 @@ export interface MusicalCues {
 export interface StationSettings {
   mood: StationMood;
   topics: StationTopic[];
+  personalities: AIPersonality[];
   atmosphereEnabled: boolean;
   atmosphereVolume: number;
+}
+
+export interface InteractiveElement {
+  question: string;
+  options: string[];
 }
 
 export interface RadioSegment {
@@ -40,9 +48,10 @@ export interface RadioSegment {
   showName: string;
   host: string;
   script: string;
-  voice: 'Kore' | 'Puck' | 'Charon' | 'Fenrir' | 'Zephyr';
+  voice: AIPersonality;
   musicalCues: MusicalCues;
   duration?: number;
+  interactiveElement?: InteractiveElement;
 }
 
 export interface RadioState {

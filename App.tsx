@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { RadioSegment, RadioState, SegmentType, StationSettings, StationMood, StationTopic } from './types';
+import { RadioSegment, RadioState, SegmentType, StationSettings, StationMood, StationTopic, AIPersonality } from './types';
 import { generateRadioScript, generateSpeech, decideNextSegment, generateInterruptionScript } from './services/geminiService';
 import { decodeBase64, decodeAudioData } from './services/audioService';
 import { AtmosphereService } from './services/atmosphereService';
@@ -8,6 +8,7 @@ import { Visualizer } from './components/Visualizer';
 
 const MOODS: StationMood[] = ['Chill', 'Breaking News', 'Philosophical', 'Retro', 'Eerie', 'Hyper', 'Gloomy'];
 const TOPICS: StationTopic[] = ['AI Ethics', 'Singularity', 'Space Exploration', 'Satirical Future', 'Tech News', 'Robotic Rights', 'Cybernetic Fashion'];
+const PERSONALITIES: AIPersonality[] = ['Kore', 'Puck', 'Charon', 'Fenrir', 'Zephyr'];
 
 const App: React.FC = () => {
   const [state, setState] = useState<RadioState>({
@@ -20,6 +21,7 @@ const App: React.FC = () => {
     settings: {
       mood: 'Philosophical',
       topics: ['AI Ethics', 'Singularity'],
+      personalities: ['Kore', 'Fenrir'],
       atmosphereEnabled: true,
       atmosphereVolume: 0.25,
     },
@@ -284,6 +286,23 @@ const App: React.FC = () => {
                   </div>
                   <h2 className="text-4xl font-bold text-white serif leading-[1.1] tracking-tight drop-shadow-md">{state.currentSegment.title}</h2>
                   <p className="text-slate-400 text-xs font-semibold uppercase tracking-widest">Host: {state.currentSegment.host}</p>
+                  
+                  {state.currentSegment.interactiveElement && (
+                    <div className="mt-8 p-6 bg-slate-800/50 border border-fuchsia-500/30 rounded-2xl animate-in fade-in slide-in-from-bottom-4 duration-700">
+                      <h3 className="text-lg font-bold text-fuchsia-400 mb-4">{state.currentSegment.interactiveElement.question}</h3>
+                      <div className="flex flex-col gap-3">
+                        {state.currentSegment.interactiveElement.options.map((option, idx) => (
+                          <button 
+                            key={idx}
+                            onClick={() => playNextSegment(`I choose: ${option}`)}
+                            className="px-4 py-3 bg-fuchsia-500/10 hover:bg-fuchsia-500/20 border border-fuchsia-500/20 hover:border-fuchsia-500/40 rounded-xl text-sm font-medium text-fuchsia-100 transition-all text-left"
+                          >
+                            {option}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="py-6"><p className="text-slate-400 italic text-lg font-light">The Forge is silent. Press play to ignite the Indigo Fire.</p></div>
