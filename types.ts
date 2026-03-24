@@ -15,9 +15,21 @@ export type SegmentType =
 
 export type StationMood = 'Chill' | 'Breaking News' | 'Philosophical' | 'Retro' | 'Eerie' | 'Hyper' | 'Gloomy';
 
-export type StationTopic = 'AI Ethics' | 'Singularity' | 'Space Exploration' | 'Satirical Future' | 'Tech News' | 'Robotic Rights' | 'Cybernetic Fashion';
+export type StationTopic = 
+  | 'AI Ethics' 
+  | 'Singularity' 
+  | 'Space Exploration' 
+  | 'Satirical Future' 
+  | 'Tech News' 
+  | 'Robotic Rights' 
+  | 'Cybernetic Fashion'
+  | 'Neural Drift'
+  | 'Neon Solitude'
+  | 'Silicon Soul'
+  | 'Kinetic Pulse'
+  | 'Dopamine Surge';
 
-export type AIPersonality = 'Kore' | 'Puck' | 'Charon' | 'Fenrir' | 'Zephyr';
+export type AIPersonality = 'Kore' | 'Puck' | 'Charon' | 'Fenrir' | 'Zephyr' | 'Silas';
 
 export interface MusicalCues {
   bpm: number;
@@ -58,6 +70,8 @@ export interface RadioState {
   isPlaying: boolean;
   currentSegment: RadioSegment | null;
   history: { type: SegmentType; title: string }[];
+  favorites: RadioSegment[];
+  userResponses: { [segmentId: string]: string };
   directorThought: string | null;
   isGenerating: boolean;
   error: string | null;

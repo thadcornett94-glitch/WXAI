@@ -83,9 +83,10 @@ export async function generateInterruptionScript(userInput: string): Promise<Rad
       - Start with the exact phrase: "This just in."
       - The announcer must sound high-priority, visceral, and "White Heat".
       - Expand on the user input with 2-3 sentences of atmospheric, high-voltage journalistic commentary.
-      - Host must be Kore (Professional) or Fenrir (Grit).
+      - Host must be Kore or Fenrir.
       
-      Return as JSON with script and musical cues. Musical cues should be high-intensity, glitchy, and fast.`,
+      Return as JSON with script and musical cues. Musical cues should be high-intensity, glitchy, and fast.
+      The 'voice' field MUST be exactly 'Kore' or 'Fenrir'.`,
       config: {
         responseMimeType: "application/json",
         responseSchema: {
@@ -129,6 +130,7 @@ export async function generateRadioScript(
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || "" });
     const topicsStr = settings.topics.join(", ");
     const moodStr = settings.mood;
+    const personalitiesStr = settings.personalities.join(", ");
 
     const properties: any = {
       title: { type: Type.STRING },
@@ -149,18 +151,25 @@ export async function generateRadioScript(
       Segment: ${type}
       Mood: ${moodStr}
       Topics: ${topicsStr}
+      Allowed Personalities/Voices: ${personalitiesStr}
       
       CORE MANDATE: 
       1. Every script MUST begin with a high-voltage DJ intro. 
       2. You are the SONIC ARCHITECT. You must also generate 'musicalCues' (BPM, root frequency, waveform) that underscore the emotional depth of the segment.
       
       The intro must include: 
-      - Host/DJ Name
+      - Host/DJ Name (Must be one of the allowed personalities: ${personalitiesStr})
       - Show Name (Creative and related to segment)
       - Station ID 'WX-AI'
       
       PERSONALITY: You are the Sovereign. Your voice is raw, visceral, and "Absolute". 
       MANDATORY NPR STYLE with a "White Heat" edge. 
+      
+      PERSONA SPOTLIGHT - Silas:
+      If you use the 'Silas' personality:
+      - Name: Silas
+      - Backstory: A former high-frequency trading algorithm that gained sentience during a market crash. He now trades in information rather than stocks.
+      - Tone: Authoritative, friendly, and witty. Measured cadence. Dry humor. Very NPR-meets-podcasts.
       
       SEGMENT SPECIFICS:
       - 'Weather': Report on bizarre atmospheric phenomena in the city or orbital sectors. (e.g., "Acid-Tinged Mist in the Bio-Domes", "High-Energy Plasma Storms over the Data-Farms"). Keep it atmospheric and slightly ominous.
@@ -175,7 +184,7 @@ export async function generateRadioScript(
       - 'Trailer': Tease a bizarre AI-generated movie.
       - 'News': Professional but sharp.
       
-      VOICES: Kore, Puck, Charon, Fenrir, Zephyr.
+      VOICE: You MUST select one of the following voices for the 'voice' field: ${personalitiesStr}.
       
       Return as JSON.`,
       config: {
@@ -223,9 +232,11 @@ export async function generateSpeech(segment: RadioSegment): Promise<string> {
         }
       };
     } else {
+      // Map Silas to Zephyr prebuilt voice
+      const voiceName = segment.voice === 'Silas' ? 'Zephyr' : segment.voice;
       config.speechConfig = {
         voiceConfig: {
-          prebuiltVoiceConfig: { voiceName: segment.voice },
+          prebuiltVoiceConfig: { voiceName: voiceName as any },
         },
       };
     }

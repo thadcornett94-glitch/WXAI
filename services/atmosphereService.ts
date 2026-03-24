@@ -130,6 +130,44 @@ export class AtmosphereService {
     });
   }
 
+  playStationTheme() {
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+    // A more complex, "heroic" sequence for the station theme
+    const chords = [
+      [261.63, 329.63, 392.00], // C
+      [349.23, 440.00, 523.25], // F
+      [392.00, 493.88, 587.33], // G
+      [523.25, 659.25, 783.99]  // C (high)
+    ];
+
+    chords.forEach((chord, i) => {
+      chord.forEach((freq, j) => {
+        const osc = this.ctx!.createOscillator();
+        const gain = this.ctx!.createGain();
+        const filter = this.ctx!.createBiquadFilter();
+
+        osc.type = 'sawtooth';
+        osc.frequency.setValueAtTime(freq, now + i * 0.5 + j * 0.02);
+        
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(2000, now + i * 0.5);
+        filter.frequency.exponentialRampToValueAtTime(500, now + i * 0.5 + 0.4);
+
+        gain.gain.setValueAtTime(0, now + i * 0.5 + j * 0.02);
+        gain.gain.linearRampToValueAtTime(0.03, now + i * 0.5 + j * 0.02 + 0.05);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.5 + 0.45);
+
+        osc.connect(filter);
+        filter.connect(gain);
+        gain.connect(this.ctx!.destination);
+
+        osc.start(now + i * 0.5 + j * 0.02);
+        osc.stop(now + i * 0.5 + 0.5);
+      });
+    });
+  }
+
   startDynamicUnderscore(cues: MusicalCues) {
     if (!this.ctx || !this.masterGain || !this.filterNode) return;
     this.stopPad();

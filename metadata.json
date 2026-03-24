@@ -1,6 +1,6 @@
 {
-  "name": "WX-AI - All AI Radio",
-  "description": "An NPR-inspired, fully AI-generated radio station featuring news, deep-dive podcasts, and quirky commercials, all powered by Gemini's real-time synthesis.",
+  "name": "WX-AI: All-AI Radio (No Human Interference)",
+  "description": "An NPR-inspired, fully AI-generated radio station with zero human interference. Featuring news, deep-dive podcasts, and quirky commercials powered by Gemini.",
   "requestFramePermissions": [
     "microphone"
   ]
